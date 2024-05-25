@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:js' as js;
+import 'package:http/http.dart' as http;
 
 void main()
 {
@@ -8,6 +9,7 @@ void main()
 }
 
 class MyApp extends StatelessWidget{
+  
   Widget build(BuildContext context){
     return MaterialApp(
       debugShowCheckedModeBanner: false, 
@@ -62,9 +64,7 @@ class LargeButton extends StatelessWidget
     Widget build(BuildContext context)
     {
       return ElevatedButton(
-        onPressed: (){
-          js.context.callMethod('alert', ['Olá Mundo!']);
-        },
+        onPressed: () => sendCommand('/acender'),
 
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(
@@ -79,4 +79,20 @@ class LargeButton extends StatelessWidget
         ),
         );
     }
+
+    void sendCommand(String command) async 
+    {
+        final String serverIp = '192.168.3.21';
+        final url = Uri.http(serverIp, command);
+      try {
+        final response = await http.get(url);
+        if (response.statusCode == 200) {
+          print('Comando enviado com sucesso');
+        } else {
+          print('Erro ao enviar comando');
+        }
+      } catch (e) {
+        print('Erro: $e');
+      } // fim do catch
+  } // fim do método sendCommand
 } // fim da classe LargeButton
